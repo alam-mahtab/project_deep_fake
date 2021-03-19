@@ -5,6 +5,8 @@ from api.user import config
 #from api.user.models import metadata
 from starlette.config import Config
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+
 
 import cloudinary
 
@@ -30,5 +32,6 @@ def database_sqlite_url_config():
 
 database = databases.Database(database_sqlite_url_config())
 engine = sqlalchemy.create_engine(database_sqlite_url_config())
+SessionLocal = sessionmaker(autoflush=False ,bind=engine, expire_on_commit=False)
 #metadata.create_all(engine)
 Base = declarative_base()
