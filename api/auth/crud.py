@@ -11,9 +11,9 @@ from pydantic import ValidationError
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
-def find_existed_user(email : str):
-    query = "Select * From users Where status='1' and email=:email"
-    return database.fetch_one(query, values={"email":email})
+def find_existed_user(username : str):
+    query = "Select * From users Where status='1' and username=:username"
+    return database.fetch_one(query, values={"username":username})
 
 async def save_user(user : schemas.UserCreate):
     query = "INSERT INTO py_user VALUES (nextval('user_id_seq'), :email, :phone, :password, :firstname, :lastname, now() at time zone 'UTC' '1' )"

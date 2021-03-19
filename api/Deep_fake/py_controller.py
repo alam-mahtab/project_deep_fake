@@ -1,6 +1,6 @@
 from sqlalchemy.orm.session import Session
 from api.user.email_config import setting
-from api.user import email_config
+from api.utils import email_utils
 import pandas as pd
 from random import randint
 from api.user import models
@@ -9,14 +9,18 @@ from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-
+from . import conf
+def check_user_exist(email,engine):
+    query = 'select * from USERS where email='+"'"+str(email)+"'"
+    df= pd.read_sql(query,engine)
+    return df.shape[0]
 
 def generate_uploading_email(RECEIVER_EMAIL):
-    subject = "URGENT: Password Change"
-    body ="\nHi User,\n\n Your password changed successfully "
-    sender_email = email_config().email_id
+    subject = "URGENT: Your Request Is Received"
+    body ="\nHi User,\n\n Your request is logged in our system \n\n you will receive another email when work is done "
+    sender_email = conf.EMAIL_ID
     receiver_email = RECEIVER_EMAIL
-    password = email_config().email_pwd
+    password = conf.EMAIL_PWD
 
     message = MIMEMultipart()
     message["From"] = sender_email

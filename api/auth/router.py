@@ -9,6 +9,7 @@ from api.user import models
 from api.utils.db_utils import engine
 from api.user.controller import find_user_by_username
 from . import py_controller
+from api.user.controller import find_email_by_username
 import cloudinary
 import cloudinary.uploader
 router = APIRouter()
@@ -35,6 +36,7 @@ async def register_user(user : schemas.UserCreate):
         status = "1",
         passcode = '0')
     await database.execute(query)
+    py_controller.generate_auth_email([user.email])
     return {
         **user.dict(),
         "id" :gid,
@@ -43,8 +45,6 @@ async def register_user(user : schemas.UserCreate):
         "passcode" : "0",
     }
     
-    return {**user.dict()}
-    #return " Register Api"
 
 @router.post("/auth/login", response_model = schemas.Token)
 async def login(form_data : OAuth2PasswordRequestForm = Depends()):
@@ -59,7 +59,11 @@ async def login(form_data : OAuth2PasswordRequestForm = Depends()):
     print("This is password", form_data.password)
     if not isValid:
         raise HTTPException(status_code = 404, detail="Incorrect Username Or Password")
-
+    # query = " Select email From users where username='"+str(form_data.username)+"'"
+    # result = await database.fetch_one(query)
+    # print(result)
+    # print(form_data.username)
+    #return result["email"]
     access_token_expires = crud.timedelta(minutes=constant.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = crud.create_access_token(
         data ={"sub": form_data.username},
@@ -72,6 +76,8 @@ async def login(form_data : OAuth2PasswordRequestForm = Depends()):
         "expired_in" : constant.ACCESS_TOKEN_EXPIRE_MINUTES*60,
         "user_info" : user
     }
+    print(user.email)
+    py_controller.generate_login_email([user.email])
     return results
 
 @router.put("/auth/update",response_model=schemas.UserList)

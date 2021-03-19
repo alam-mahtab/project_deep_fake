@@ -29,7 +29,7 @@ class Users(Base):
     created_at = Column(DateTime,default=datetime.datetime.utcnow)
     status = Column(String)
     passcode = Column(String)
-    deep_user = relationship('Fake',back_populates='client')
+    #deep_user = relationship('Fake',back_populates='client')
     #deep_make = relationship('Paid',back_populates='users')
 
 # class Deep(Base):
@@ -48,9 +48,22 @@ class Fake(Base):
 
     id = Column(Integer, primary_key=True) 
     created_at = Column(DateTime,default=datetime.datetime.utcnow)
+    email = Column(String)
     url_photo = Column(String)
     url_video = Column(String)
     url_done = Column(String)
-    client_id = Column(String, ForeignKey('users.email'))
-    client = relationship('Users', back_populates='deep_user')
+    # client_id = Column(String, ForeignKey('users.email'))
+    # client = relationship('Users', back_populates='deep_user')
+
+class Payment(Base):
+    __tablename__ = "payments"
+
+    id = Column(String, primary_key=True,unique=True)
+    created_date = Column(DateTime,default=datetime.datetime.utcnow)
+    pay_id = Column(String)
+    amount = Column(String)
+    currency = Column(String)
+    receipt = Column(String)
+    status = Column(String)
+    pay_createdat = Column(String)
 
