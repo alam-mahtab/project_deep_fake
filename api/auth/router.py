@@ -36,7 +36,7 @@ async def register_user(user : schemas.UserCreate):
         status = "1",
         passcode = '0')
     await database.execute(query)
-    py_controller.generate_auth_email([user.email])
+    py_controller.generate_register_email([user.email])
     return {
         **user.dict(),
         "id" :gid,

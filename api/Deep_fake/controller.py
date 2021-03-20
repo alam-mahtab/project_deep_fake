@@ -36,11 +36,13 @@ router.mount("/static", StaticFiles(directory="static"), name="static")
 dirname = dirname(dirname(abspath(__file__)))
 images_path = join(dirname ,'/static')
 
-# current_file = Path(__file__)
-# current_file_dir = current_file.parent
-# project_root = current_file_dir.parent
-# project_root_absolute = project_root.resolve()
-# static_root_absolute = project_root_absolute / "static" 
+from pathlib import Path
+
+current_file = Path(__file__)
+current_file_dir = current_file.parent
+project_root = current_file_dir.parent
+project_root_absolute = project_root.resolve()
+static_root_absolute = project_root_absolute / "static" 
 
 # # @router.post("/deepfake/upload")
 # # async def upload_photo_and_video(client_id:str,file_photo: UploadFile= File(...), file_video: UploadFile= File(...), db: Session = Depends(get_db)):
@@ -64,7 +66,7 @@ async def upload_photo_and_video(email:str,file_photo: UploadFile= File(...), fi
             shutil.copyfileobj(file_photo.file, image)
         print(dirname)
         print(images_path)
-        url_photo = os.path.join(dirname, filename_pro)
+        url_photo = os.path.join(static_root_absolute, filename_pro)
 
         # extension_cover = file_cover.filename.split(".")[-1] in ("jpg", "jpeg", "png")
         # if not extension_cover:
@@ -73,7 +75,7 @@ async def upload_photo_and_video(email:str,file_photo: UploadFile= File(...), fi
         filename_cover = time.strftime( str(uuid.uuid4().hex) + "%Y%m%d-%H%M%S" + suffix_cover )
         with open("static/"+filename_cover, "wb+") as video:
             shutil.copyfileobj(file_video.file, video)
-        url_video = os.path.join(images_path, filename_cover)
+        url_video = os.path.join(static_root_absolute, filename_cover)
         py_controller.generate_uploading_email([email])
         print("Success")
         return crud.create_request_of_deepfake(db=db,email=email,url_photo=url_photo,url_video=url_video)
